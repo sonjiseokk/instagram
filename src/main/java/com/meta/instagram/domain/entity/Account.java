@@ -5,6 +5,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static jakarta.persistence.EnumType.STRING;
 import static lombok.AccessLevel.PROTECTED;
 
@@ -21,6 +24,8 @@ public class Account extends BaseEntity{
     private String password;
     @Enumerated(value = STRING)
     private Role role;
+    @OneToMany(mappedBy = "account")
+    private List<Post> posts = new ArrayList<>();
 
     @Builder
     public Account(final String email, final String nickname, final String password) {
@@ -28,5 +33,6 @@ public class Account extends BaseEntity{
         this.nickname = nickname;
         this.password = password;
         this.role = Role.ROLE_USER;
+        this.posts = new ArrayList<>();
     }
 }

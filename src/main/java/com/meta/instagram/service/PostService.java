@@ -20,10 +20,22 @@ public class PostService {
     private final PostRepository postRepository;
     private final TagRepository tagRepository;
 
+    /**
+     * 게시물 내용, 게시물 태그 (리스트) 받아서
+     * 형태 변환 시켜준 후 중간 테이블까지 매치시켜주는 함수
+     * @param request
+     * @return saved Post id
+     */
     @Transactional
     public Long createPost(PostRequest request) {
         Set<PostTag> postTags = new HashSet<>();
 
+        Post post = createPostWithTags(request, postTags);
+        postRepository.save(post);
+        return post.getId();
+    }
+
+    private Post createPostWithTags(final PostRequest request, final Set<PostTag> postTags) {
         Post post = Post.builder()
                 .content(request.getContent())
                 .postTags(postTags)
@@ -41,7 +53,6 @@ public class PostService {
 
             post.getPostTags().add(postTag);
         }
-        postRepository.save(post);
-        return post.getId();
+        return post;
     }
 }

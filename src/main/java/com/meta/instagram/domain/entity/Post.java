@@ -19,6 +19,9 @@ public class Post {
     @Column(name = "post_id")
     private Long id;
     private String content;
+    @ManyToOne
+    @JoinColumn(name = "account_id")
+    private Account account;
     @OneToMany
     private Set<PostTag> postTags = new HashSet<>();
 

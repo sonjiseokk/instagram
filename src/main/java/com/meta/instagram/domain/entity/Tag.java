@@ -20,7 +20,7 @@ public class Tag {
     private Long id;
     @Column(name = "tag_name")
     private String name;
-    @OneToMany
+    @OneToMany(mappedBy = "tag")
     private Set<PostTag> postTags = new HashSet<>();
 
     @Builder

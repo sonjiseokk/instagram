@@ -1,10 +1,10 @@
-# 커뮤니티
+# 인스타그램 백엔드 설계하기
 
 >  **개발기간: 2023.12.26 ~ 현재 진행중**
 
 ## 프로젝트 소개
 
-기본적인 커뮤니티 구조를 만들기
+인스타그램 페이지를 보며 가상의 백엔드 서버를 구축해보는 프로젝트
 ## 시작 가이드
 ### Requirements
 For building and running the application you need:

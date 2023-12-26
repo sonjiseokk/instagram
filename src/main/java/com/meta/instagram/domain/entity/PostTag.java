@@ -1,6 +1,7 @@
 package com.meta.instagram.domain.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -21,4 +22,10 @@ public class PostTag {
     @ManyToOne
     @JoinColumn(name = "tag_id")
     private Tag tag;
+
+    @Builder
+    public PostTag(final Post post, final Tag tag) {
+        this.post = post;
+        this.tag = tag;
+    }
 }

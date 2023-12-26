@@ -1,6 +1,7 @@
 package com.meta.instagram.domain.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -21,4 +22,9 @@ public class Post {
     @OneToMany
     private Set<PostTag> postTags = new HashSet<>();
 
+    @Builder
+    public Post(final String content, final Set<PostTag> postTags) {
+        this.content = content;
+        this.postTags = postTags;
+    }
 }

@@ -30,4 +30,7 @@ public class Post {
         this.content = content;
         this.postTags = postTags;
     }
+    public void allocatePostTags(Set<PostTag> postTags) {
+        this.postTags = postTags;
+    }
 }

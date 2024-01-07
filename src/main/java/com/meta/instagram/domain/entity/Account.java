@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static jakarta.persistence.EnumType.STRING;
+import static jakarta.persistence.FetchType.*;
 import static lombok.AccessLevel.PROTECTED;
 
 @Getter
@@ -26,6 +27,9 @@ public class Account extends BaseEntity{
     private Role role;
     @OneToMany(mappedBy = "account")
     private List<Post> posts = new ArrayList<>();
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "image_id")
+    private Image image;
 
     @Builder
     public Account(final String email, final String nickname, final String password) {
@@ -34,5 +38,6 @@ public class Account extends BaseEntity{
         this.password = password;
         this.role = Role.ROLE_USER;
         this.posts = new ArrayList<>();
+        this.image = Image.getDefaultImage();
     }
 }

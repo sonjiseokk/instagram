@@ -30,4 +30,13 @@ public class Image {
         this.type = type;
         this.size = size;
     }
+
+    public static Image getDefaultImage(){
+        return Image.builder()
+                .path("/")
+                .originalName("default_image")
+                .size(0)
+                .type("jpg")
+                .build();
+    }
 }

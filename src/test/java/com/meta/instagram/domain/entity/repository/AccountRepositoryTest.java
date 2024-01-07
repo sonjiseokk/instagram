@@ -27,8 +27,7 @@ class AccountRepositoryTest {
         Account account = accountDto.toEntity();
         //when
         Account savedAccount = accountRepository.save(account);
-        em.flush();
-        em.clear();
+
         //then
 
         assertThat(account.getEmail()).isEqualTo(savedAccount.getEmail());

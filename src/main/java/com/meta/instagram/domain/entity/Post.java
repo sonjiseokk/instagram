@@ -29,10 +29,12 @@ public class Post extends BaseEntity{
     private List<PostImage> postImages;
 
     @Builder
-    public Post(final String content, final Set<PostTag> postTags) {
+    public Post(String content, Account account, Set<PostTag> postTags) {
         this.content = content;
+        this.account = account;
         this.postTags = postTags;
     }
+
     public void allocatePostTags(Set<PostTag> postTags) {
         this.postTags = postTags;
     }

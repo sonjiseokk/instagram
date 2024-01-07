@@ -4,6 +4,7 @@ import com.meta.instagram.domain.dto.PostResponse;
 import com.meta.instagram.domain.dto.SearchCondition;
 import com.meta.instagram.domain.entity.Post;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
@@ -75,12 +76,12 @@ public class PostRepositoryQuery{
     }
 
     private Long getLikeCount(Long postId) {
-    return queryFactory
-            .select(postLike.count())
-            .from(postLike)
-            .where(postLike.post.id.eq(postId))
-            .fetchOne();
-}
+        return queryFactory
+                .select(postLike.count())
+                .from(postLike)
+                .where(postLike.post.id.eq(postId))
+                .fetchOne();
+    }
 
     private Long getCommentCount(Long postId) {
         return queryFactory
@@ -90,10 +91,16 @@ public class PostRepositoryQuery{
             .fetchOne();
     }
     private static BooleanExpression tagSearch(SearchCondition condition) {
+        if (condition == null || condition.getName() == null || condition.getName().isEmpty()) {
+            return Expressions.TRUE;
+        }
         return postTag.tag.name.eq(condition.getTag());
     }
 
     private static BooleanExpression nameSearch(SearchCondition condition) {
+        if (condition == null || condition.getName() == null || condition.getName().isEmpty()) {
+            return Expressions.TRUE;
+        }
         return post.account.nickname.eq(condition.getName());
     }
 }

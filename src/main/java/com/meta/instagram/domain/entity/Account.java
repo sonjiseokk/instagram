@@ -27,7 +27,7 @@ public class Account extends BaseEntity{
     private Role role;
     @OneToMany(mappedBy = "account")
     private List<Post> posts = new ArrayList<>();
-    @ManyToOne(fetch = LAZY)
+    @ManyToOne(fetch = LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name = "image_id")
     private Image image;
 

@@ -6,11 +6,11 @@ import lombok.Getter;
 @Getter
 public class SearchCondition {
     private String tag;
-    private String name;
+    private String writerName;
 
     @Builder
-    public SearchCondition(String tag, String name) {
+    public SearchCondition(String tag, String writerName) {
         this.tag = tag;
-        this.name = name;
+        this.writerName = writerName;
     }
 }

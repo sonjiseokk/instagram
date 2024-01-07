@@ -91,16 +91,16 @@ public class PostRepositoryQuery{
             .fetchOne();
     }
     private static BooleanExpression tagSearch(SearchCondition condition) {
-        if (condition == null || condition.getName() == null || condition.getName().isEmpty()) {
+        if (condition == null || condition.getTag() == null || condition.getTag().isEmpty()) {
             return Expressions.TRUE;
         }
-        return postTag.tag.name.eq(condition.getTag());
+        return post.postTags.any().tag.name.eq(condition.getTag());
     }
 
     private static BooleanExpression nameSearch(SearchCondition condition) {
-        if (condition == null || condition.getName() == null || condition.getName().isEmpty()) {
+        if (condition == null || condition.getWriterName() == null || condition.getWriterName().isEmpty()) {
             return Expressions.TRUE;
         }
-        return post.account.nickname.eq(condition.getName());
+        return post.account.nickname.eq(condition.getWriterName());
     }
 }

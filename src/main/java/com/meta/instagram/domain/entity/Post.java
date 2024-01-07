@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static jakarta.persistence.CascadeType.*;
 import static lombok.AccessLevel.PROTECTED;
 
 @Getter
@@ -23,16 +24,23 @@ public class Post extends BaseEntity{
     @ManyToOne
     @JoinColumn(name = "account_id")
     private Account account;
-    @OneToMany
+    @OneToMany(mappedBy = "post",cascade = ALL)
     private Set<PostTag> postTags = new HashSet<>();
     @OneToMany(mappedBy = "post")
     private List<PostImage> postImages;
 
     @Builder
-    public Post(String content, Account account, Set<PostTag> postTags) {
+    public Post(String content, Account account) {
         this.content = content;
         this.account = account;
-        this.postTags = postTags;
+    }
+
+    public void addTag(Tag tag) {
+        PostTag postTag = PostTag.builder()
+                .tag(tag)
+                .post(this)
+                .build();
+        this.postTags.add(postTag);
     }
 
     public void allocatePostTags(Set<PostTag> postTags) {

@@ -4,7 +4,6 @@ import com.meta.instagram.domain.dto.PostResponse;
 import com.meta.instagram.domain.dto.SearchCondition;
 import com.meta.instagram.domain.entity.Account;
 import com.meta.instagram.domain.entity.Post;
-import com.meta.instagram.domain.entity.PostTag;
 import com.meta.instagram.domain.entity.Tag;
 import com.meta.instagram.domain.entity.repository.AccountRepository;
 import com.meta.instagram.domain.entity.repository.PostRepository;
@@ -26,7 +25,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -80,17 +78,36 @@ class PostRepositoryQueryTest {
         assertThat(post.getContent()).isEqualTo(savedResponse.getContent());
 //        assertThat(savedResponse.getCommentCount()).isEqualTo(1);
 //        assertThat(savedResponse.getLikeCount()).isEqualTo(1);
+    }
 
+    @Test
+    @DisplayName("특정 게시물이 조회되는지 테스트")
+    void 특정_게시물이_조회되는지_테스트() throws Exception {
+        //given
+        Pageable pageable = PageRequest.of(0, 10);
+        Post post = createTestData();
+        System.out.println(post.getPostTags().size());
+
+        //when
+        SearchCondition condition = SearchCondition.builder()
+                .writerName("nickname")
+                .tag("tag1")
+                .build();
+        List<PostResponse> postResponses = postRepositoryQuery.findAll(condition, pageable);
+        //then
+        assertThat(postResponses.size()).isEqualTo(1);
+
+        PostResponse savedResponse = postResponses.get(0);
+        assertThat(post.getAccount().getNickname()).isEqualTo(savedResponse.getNickname());
+        assertThat(post.getCreatedDate()).isEqualTo(savedResponse.getCreatedDate());
+        assertThat(post.getContent()).isEqualTo(savedResponse.getContent());
     }
     private Post createTestData() {
         Account account = getAccount();
         Tag tag = getTag();
         Post post = getPostData(tag,account);
-        PostTag postTag = getPostTag(post,tag);
-        post.allocatePostTags(Set.of(postTag));
 
         accountRepository.save(account);
-        postTagRepository.save(postTag);
         tagRepository.save(tag);
         postRepository.save(post);
         return post;
@@ -110,19 +127,14 @@ class PostRepositoryQueryTest {
                 .build();
     }
 
-    private static PostTag getPostTag(Post post, Tag tag) {
-        return PostTag.builder()
-                .post(post)
-                .tag(tag)
-                .build();
-    }
-
     private static Post getPostData(Tag tag,Account account) {
-        return Post.builder()
+        Post post = Post.builder()
                 .account(account)
                 .content("content")
-                .postTags(null)
                 .build();
+
+        post.addTag(tag);
+        return post;
     }
 
     @TestConfiguration

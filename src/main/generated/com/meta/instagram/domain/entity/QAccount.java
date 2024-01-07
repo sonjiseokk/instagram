@@ -18,6 +18,8 @@ public class QAccount extends EntityPathBase<Account> {
 
     private static final long serialVersionUID = 520047764L;
 
+    private static final PathInits INITS = PathInits.DIRECT2;
+
     public static final QAccount account = new QAccount("account");
 
     public final QBaseEntity _super = new QBaseEntity(this);
@@ -28,6 +30,8 @@ public class QAccount extends EntityPathBase<Account> {
     public final StringPath email = createString("email");
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
+
+    public final QImage image;
 
     //inherited
     public final DatePath<java.time.LocalDate> lastModifiedDate = _super.lastModifiedDate;
@@ -41,15 +45,24 @@ public class QAccount extends EntityPathBase<Account> {
     public final EnumPath<Role> role = createEnum("role", Role.class);
 
     public QAccount(String variable) {
-        super(Account.class, forVariable(variable));
+        this(Account.class, forVariable(variable), INITS);
     }
 
     public QAccount(Path<? extends Account> path) {
-        super(path.getType(), path.getMetadata());
+        this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
     }
 
     public QAccount(PathMetadata metadata) {
-        super(Account.class, metadata);
+        this(metadata, PathInits.getFor(metadata, INITS));
+    }
+
+    public QAccount(PathMetadata metadata, PathInits inits) {
+        this(Account.class, metadata, inits);
+    }
+
+    public QAccount(Class<? extends Account> type, PathMetadata metadata, PathInits inits) {
+        super(type, metadata, inits);
+        this.image = inits.isInitialized("image") ? new QImage(forProperty("image")) : null;
     }
 
 }

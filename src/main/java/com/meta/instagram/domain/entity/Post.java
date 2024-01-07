@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static lombok.AccessLevel.PROTECTED;
@@ -13,7 +14,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Getter
 @NoArgsConstructor(access = PROTECTED)
 @Entity
-public class Post {
+public class Post extends BaseEntity{
     @Id
     @GeneratedValue
     @Column(name = "post_id")
@@ -24,6 +25,8 @@ public class Post {
     private Account account;
     @OneToMany
     private Set<PostTag> postTags = new HashSet<>();
+    @OneToMany(mappedBy = "post")
+    private List<PostImage> postImages;
 
     @Builder
     public Post(final String content, final Set<PostTag> postTags) {

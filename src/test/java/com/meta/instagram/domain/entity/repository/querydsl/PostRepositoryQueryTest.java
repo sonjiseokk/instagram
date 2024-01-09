@@ -24,6 +24,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,7 +50,7 @@ class PostRepositoryQueryTest {
     @Transactional
     void 연관된_PostTag까지_같이_게시물_조회하는_기능_테스트() throws Exception {
         //given
-        Post post = createTestData();
+        Post post = createTestData(1);
 
         //when
         Post findPost = postRepositoryQuery.findById(post.getId());
@@ -66,7 +67,7 @@ class PostRepositoryQueryTest {
     void 모든_게시물이_조회되는지_테스트() throws Exception {
         //given
         Pageable pageable = PageRequest.of(0, 10);
-        Post post = createTestData();
+        Post post = createTestData(1);
 
         //when
         List<PostResponse> postResponses = postRepositoryQuery.findAll(SearchCondition.builder().build(), pageable);
@@ -85,7 +86,7 @@ class PostRepositoryQueryTest {
     void 특정_게시물이_조회되는지_테스트() throws Exception {
         //given
         Pageable pageable = PageRequest.of(0, 10);
-        Post post = createTestData();
+        Post post = createTestData(1);
         System.out.println(post.getPostTags().size());
 
         //when
@@ -102,10 +103,29 @@ class PostRepositoryQueryTest {
         assertThat(post.getCreatedDate()).isEqualTo(savedResponse.getCreatedDate());
         assertThat(post.getContent()).isEqualTo(savedResponse.getContent());
     }
-    private Post createTestData() {
+    @Test
+    @DisplayName("페이징이 정상적으로 처리되는지 테스트")
+    void 페이징이_정상적으로_처리되는지_테스트() throws Exception {
+        //given
+        Pageable pageable = PageRequest.of(0, 10);
+        List<Post> posts = new ArrayList<>();
+        for (int i = 0; i <11; i++) {
+            posts.add(createTestData(i));
+        }
+
+        //when
+        List<PostResponse> responses = postRepositoryQuery.findAll(SearchCondition.builder().build(), pageable);
+        PostResponse postResponse = responses.get(0);
+
+        //then
+        assertThat(posts.size()).isEqualTo(responses.size() + 1); // 11개 있고 2페이지이기 때문에 10개만 조회되어야 맞음
+        assertThat(postResponse.getContent()).isEqualTo("content0");
+        assertThat(responses.get(responses.size() - 1).getContent()).isEqualTo("content9");
+    }
+    private Post createTestData(int index) {
         Account account = getAccount();
-        Tag tag = getTag();
-        Post post = getPostData(tag,account);
+        Tag tag = getTag(index);
+        Post post = getPostData(tag, account, index);
 
         accountRepository.save(account);
         tagRepository.save(tag);
@@ -121,16 +141,16 @@ class PostRepositoryQueryTest {
                 .build();
     }
 
-    private static Tag getTag() {
+    private static Tag getTag(int index) {
         return Tag.builder()
-                .name("tag1")
+                .name("tag" + index)
                 .build();
     }
 
-    private static Post getPostData(Tag tag,Account account) {
+    private static Post getPostData(Tag tag,Account account,int index) {
         Post post = Post.builder()
                 .account(account)
-                .content("content")
+                .content("content" + index)
                 .build();
 
         post.addTag(tag);

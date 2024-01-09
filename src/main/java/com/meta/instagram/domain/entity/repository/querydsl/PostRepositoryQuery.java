@@ -1,6 +1,7 @@
 package com.meta.instagram.domain.entity.repository.querydsl;
 
 import com.meta.instagram.domain.dto.PostResponse;
+import com.meta.instagram.domain.dto.QPostResponse;
 import com.meta.instagram.domain.dto.SearchCondition;
 import com.meta.instagram.domain.entity.Post;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -30,10 +31,11 @@ public class PostRepositoryQuery{
 
     /**
      * 단건 게시물을 조회할때 연관된 태그들(s)을 같이 반환하는 기능
+     *
      * @return post
      * @throws IllegalArgumentException
      */
-    public Post findById(Long id) {
+    public PostResponse findById(Long id) {
         Post findPost = queryFactory.query()
                 .select(post)
                 .from(post)
@@ -42,9 +44,17 @@ public class PostRepositoryQuery{
                 .fetchOne();
 
         if (findPost == null) {
-            throw new IllegalArgumentException("잘못된 ID 입니다.");
+            throw new IllegalArgumentException("게시물을 찾을 수 없습니다.");
         }
-        return findPost;
+
+        PostResponse postResponse = new PostResponse(
+                findPost.getAccount().getNickname(),
+                findPost.getCreatedDate(),
+                findPost.getContent(),
+                getLikeCount(id),
+                getCommentCount(id)
+        );
+        return postResponse;
     }
 
     /**
@@ -73,6 +83,24 @@ public class PostRepositoryQuery{
                         getCommentCount(p.getId())
                 ))
                 .collect(Collectors.toList());
+    }
+
+    public PostResponse findByIdQuery(Long id) {
+        return queryFactory.select(
+                        new QPostResponse(
+                                account.nickname,
+                                post.createdDate,
+                                post.content,
+                                postLike.count(),
+                                postComment.count()
+                        )
+                )
+                .from(post)
+                .leftJoin(post.account,account)
+                .leftJoin(post,postLike.post)
+                .leftJoin(post,postComment.post)
+                .where(post.id.eq(id))
+                .fetchOne();
     }
 
     private Long getLikeCount(Long postId) {

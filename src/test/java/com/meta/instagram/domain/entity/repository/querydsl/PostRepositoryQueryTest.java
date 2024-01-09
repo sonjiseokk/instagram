@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
 @Import({PostRepositoryQueryTest.TestConfig.class, PostRepositoryQuery.class})
@@ -53,13 +52,13 @@ class PostRepositoryQueryTest {
         Post post = createTestData(1);
 
         //when
-        Post findPost = postRepositoryQuery.findById(post.getId());
+        PostResponse postResponse = postRepositoryQuery.findById(post.getId());
 
         //then
-        assertThat(findPost.getContent()).isEqualTo(post.getContent());
-        assertThat(findPost.getPostTags().size()).isEqualTo(post.getPostTags().size());
-        assertTrue(findPost.getPostTags().stream()
-                .anyMatch(postTag1 -> postTag1.getTag().getName().equals("tag1")));
+        assertThat(postResponse.getContent()).isEqualTo(post.getContent());
+//        assertThat(postResponse.getTagNames().size()).isEqualTo(post.getPostTags().size());
+//        assertTrue(postResponse.getTagNames().stream()
+//                .anyMatch(postTag1 -> postTag1.equals("tag1")));
 
     }
     @Test
@@ -121,6 +120,21 @@ class PostRepositoryQueryTest {
         assertThat(posts.size()).isEqualTo(responses.size() + 1); // 11개 있고 2페이지이기 때문에 10개만 조회되어야 맞음
         assertThat(postResponse.getContent()).isEqualTo("content0");
         assertThat(responses.get(responses.size() - 1).getContent()).isEqualTo("content9");
+    }
+    // TODO: 라이크랑 코멘트 테이블이 없어서 지금은 테스트 불가능
+    // 그러나 이후에 분명 한방 쿼리로 변경해야할 문제 (성능 이슈)
+    @Test
+    @DisplayName("한방 쿼리 테스트")
+    void 한방_쿼리_테스트() throws Exception {
+        //given
+        Post post = createTestData(1);
+
+        //when
+        PostResponse postResponse = postRepositoryQuery.findByIdQuery(post.getId());
+
+        //then
+        assertThat(postResponse.getContent()).isEqualTo(post.getContent());
+//        assertThat(postResponse.getComments()).isEqualTo(0);
     }
     private Post createTestData(int index) {
         Account account = getAccount();

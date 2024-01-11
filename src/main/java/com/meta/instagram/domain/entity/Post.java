@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -27,7 +28,11 @@ public class Post extends BaseEntity{
     @OneToMany(mappedBy = "post",cascade = ALL)
     private Set<PostTag> postTags = new HashSet<>();
     @OneToMany(mappedBy = "post")
-    private List<PostImage> postImages;
+    private List<PostImage> postImages = new ArrayList<>();
+    @OneToMany(mappedBy = "post")
+    private List<PostLike> postLikes = new ArrayList<>();
+    @OneToMany(mappedBy = "post")
+    private List<PostComment> postComments = new ArrayList<>();
 
     @Builder
     public Post(String content, Account account) {
@@ -43,7 +48,4 @@ public class Post extends BaseEntity{
         this.postTags.add(postTag);
     }
 
-    public void allocatePostTags(Set<PostTag> postTags) {
-        this.postTags = postTags;
-    }
 }

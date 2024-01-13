@@ -1,7 +1,5 @@
 package com.meta.instagram.domain.entity.repository.querydsl;
 
-import com.meta.instagram.domain.dto.PostResponse;
-import com.meta.instagram.domain.dto.QPostResponse;
 import com.meta.instagram.domain.dto.SearchCondition;
 import com.meta.instagram.domain.entity.Post;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -14,7 +12,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 
 import static com.meta.instagram.domain.entity.QAccount.account;
 import static com.meta.instagram.domain.entity.QPost.post;
@@ -61,71 +58,40 @@ public class PostRepositoryQuery{
      * @return List Post
      * @throws NoSuchElementException
      */
-    public List<PostResponse> findAll(SearchCondition condition, Pageable pageable) {
-        List<Post> posts = queryFactory
+    public List<Post> findAll(SearchCondition condition, Pageable pageable) {
+        return queryFactory
                 .select(post)
                 .from(post)
                 .leftJoin(post.account, account)
+                .leftJoin(post.postComments, postComment)
+                .leftJoin(post.postLikes, postLike)
+                .leftJoin(post.postTags, postTag)
+                .leftJoin(post.postImages, postImage)
                 .where(nameSearch(condition), tagSearch(condition))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
-
-        return posts.stream()
-                .map(p -> new PostResponse(
-                        p.getAccount().getNickname(),
-                        p.getCreatedDate(),
-                        p.getContent(),
-                        getLikeCount(p.getId()),
-                        getCommentCount(p.getId())
-                ))
-                .collect(Collectors.toList());
     }
 
-    public PostResponse findByIdQuery(Long id) {
-        return queryFactory.select(
-                        new QPostResponse(
-                                account.nickname,
-                                post.createdDate,
-                                post.content,
-                                postLike.count(),
-                                postComment.count()
-                        )
-                )
-                .from(post)
-                .leftJoin(post.account,account)
-                .leftJoin(post,postLike.post)
-                .leftJoin(post,postComment.post)
-                .where(post.id.eq(id))
-                .fetchOne();
-    }
 
-    private Long getLikeCount(Long postId) {
-        return queryFactory
-                .select(postLike.count())
-                .from(postLike)
-                .where(postLike.post.id.eq(postId))
-                .fetchOne();
-    }
-
-    private Long getCommentCount(Long postId) {
-        return queryFactory
-            .select(postComment.count())
-            .from(postComment)
-            .where(postComment.post.id.eq(postId))
-            .fetchOne();
-    }
     private static BooleanExpression tagSearch(SearchCondition condition) {
-        if (condition == null || condition.getTag() == null || condition.getTag().isEmpty()) {
-            return Expressions.TRUE;
+        if (condition == null || condition.getTags() == null || condition.getTags().isEmpty()) {
+            return null;
         }
-        return post.postTags.any().tag.name.eq(condition.getTag());
+        // TODO: 이부분이 GPT로 해결한 부분이라 어떻게 해결한 건지 찾아봐야할듯..
+        List<String> tags = condition.getTags();
+        BooleanExpression expression = Expressions.asBoolean(false).isFalse();
+
+        for (String tag1 : tags) {
+            expression = expression.or(post.postTags.any().tag.name.eq(tag1));
+        }
+        return expression;
     }
 
     private static BooleanExpression nameSearch(SearchCondition condition) {
         if (condition == null || condition.getWriterName() == null || condition.getWriterName().isEmpty()) {
-            return Expressions.TRUE;
+            return null;
         }
-        return post.account.nickname.eq(condition.getWriterName());
+        return account.nickname.eq(condition.getWriterName());
     }
 }

@@ -79,7 +79,12 @@ public class PostRepositoryQuery{
             return null;
         }
         // TODO: 이부분이 GPT로 해결한 부분이라 어떻게 해결한 건지 찾아봐야할듯..
+        /**
+         *
+         */
         List<String> tags = condition.getTags();
+//        BooleanExpression expression = Expressions.FALSE; 이거였음
+//        return post.postTags.any().tag.name.eq(condition.getTag()); 완전 처음은 이거
         BooleanExpression expression = Expressions.asBoolean(false).isFalse();
 
         for (String tag1 : tags) {

@@ -29,7 +29,7 @@ public class Account extends BaseEntity{
     private List<Post> posts = new ArrayList<>();
     @ManyToOne(fetch = LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name = "image_id")
-    private Image image;
+    private Image profileImage;
 
     @Builder
     public Account(final String email, final String nickname, final String password) {
@@ -38,6 +38,6 @@ public class Account extends BaseEntity{
         this.password = password;
         this.role = Role.ROLE_USER;
         this.posts = new ArrayList<>();
-        this.image = Image.getDefaultImage();
+        this.profileImage = Image.getDefaultImage();
     }
 }

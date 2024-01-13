@@ -1,9 +1,9 @@
 package com.meta.instagram.domain.dto;
 
-import com.querydsl.core.annotations.QueryProjection;
+import com.meta.instagram.domain.entity.Account;
+import com.meta.instagram.domain.entity.Post;
 import lombok.Builder;
 import lombok.Getter;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -18,26 +18,37 @@ import java.util.List;
  */
 @Getter
 public class PostResponse {
-    private MultipartFile profileImage; // 서비스
+    // Image
+    private List<ImageDto> images;
+
+    // Account
+    private ImageDto profileImage;
     private String nickname;
+
+    // Post 기본 요소들
     private LocalDate createdDate;
-    private List<MultipartFile> images; // 서비스
     private String content;
-    private Long likeCount;
-    private Long commentCount;
-    private List<String> comments; // 서비스, 다른 쿼리 (아마 commentDto 따로 만들어야할듯?)
+
+    // 양방향 매핑 사용
+    private int likeCount;
+    private int commentCount;
+
+
+    private List<CommentDto> comments;
     private List<String> tagNames;
 
-    // TODO: 이미지들, 코멘트들, 태그이름들 서비스에서 처리해서 주입해주기
-
-
     @Builder
-    @QueryProjection
-    public PostResponse(String nickname, LocalDate createdDate, String content, Long likeCount, Long commentCount) {
-        this.nickname = nickname;
-        this.createdDate = createdDate;
-        this.content = content;
-        this.likeCount = likeCount;
-        this.commentCount = commentCount;
+    public PostResponse(List<ImageDto> images, ImageDto profileImage, Account account, Post post, List<CommentDto> comments, List<String> tagNames) {
+        this.images = images;
+        this.profileImage = profileImage;
+        this.nickname = account.getNickname();
+        this.createdDate = post.getCreatedDate();
+        this.content = post.getContent();
+        this.likeCount = post.getPostLikes().size();
+        this.commentCount = post.getPostComments().size();
+        this.comments = comments;
+        this.tagNames = tagNames;
     }
+
+
 }

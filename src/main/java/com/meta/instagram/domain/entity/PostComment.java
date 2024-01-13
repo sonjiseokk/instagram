@@ -1,6 +1,7 @@
 package com.meta.instagram.domain.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -21,4 +22,10 @@ public class PostComment {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "comment_id")
     private Comment comment;
+
+    @Builder
+    public PostComment(Post post, Comment comment) {
+        this.post = post;
+        this.comment = comment;
+    }
 }

@@ -1,6 +1,7 @@
 package com.meta.instagram.domain.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -19,7 +20,6 @@ public class Comment {
     @Column(name = "comment_id")
     private Long id;
     private String content;
-    private Long likeCount;
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "account_id")
     private Account account;
@@ -31,4 +31,11 @@ public class Comment {
 
     @OneToMany(mappedBy = "comment")
     private List<PostComment> postComments = new ArrayList<>();
+
+    @Builder
+    public Comment(String content, Account account) {
+        this.content = content;
+        this.account = account;
+    }
+
 }

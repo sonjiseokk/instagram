@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 import static com.meta.instagram.domain.entity.QAccount.account;
 import static com.meta.instagram.domain.entity.QPost.post;
 import static com.meta.instagram.domain.entity.QPostComment.postComment;
+import static com.meta.instagram.domain.entity.QPostImage.postImage;
 import static com.meta.instagram.domain.entity.QPostLike.postLike;
 import static com.meta.instagram.domain.entity.QPostTag.postTag;
 
@@ -35,11 +36,14 @@ public class PostRepositoryQuery{
      * @return post
      * @throws IllegalArgumentException
      */
-    public PostResponse findById(Long id) {
+    public Post findById(Long id) {
         Post findPost = queryFactory.query()
                 .select(post)
                 .from(post)
                 .leftJoin(post.postTags, postTag)
+                .leftJoin(post.postLikes, postLike)
+                .leftJoin(post.postImages, postImage)
+                .leftJoin(post.postComments, postComment)
                 .where(post.id.eq(id))
                 .fetchOne();
 
@@ -47,14 +51,7 @@ public class PostRepositoryQuery{
             throw new IllegalArgumentException("게시물을 찾을 수 없습니다.");
         }
 
-        PostResponse postResponse = new PostResponse(
-                findPost.getAccount().getNickname(),
-                findPost.getCreatedDate(),
-                findPost.getContent(),
-                getLikeCount(id),
-                getCommentCount(id)
-        );
-        return postResponse;
+        return findPost;
     }
 
     /**

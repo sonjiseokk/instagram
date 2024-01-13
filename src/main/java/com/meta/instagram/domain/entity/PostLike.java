@@ -1,6 +1,7 @@
 package com.meta.instagram.domain.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -20,4 +21,10 @@ public class PostLike {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
+
+    @Builder
+    public PostLike(Account account, Post post) {
+        this.account = account;
+        this.post = post;
+    }
 }

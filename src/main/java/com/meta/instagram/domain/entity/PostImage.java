@@ -2,6 +2,7 @@ package com.meta.instagram.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -21,4 +22,10 @@ public class PostImage {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "image_id")
     private Image image;
+
+    @Builder
+    public PostImage(Post post, Image image) {
+        this.post = post;
+        this.image = image;
+    }
 }

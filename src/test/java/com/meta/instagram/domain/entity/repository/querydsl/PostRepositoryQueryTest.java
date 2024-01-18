@@ -24,6 +24,12 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/**
+ * 쿼리 DSL을 사용하는 레포지토리를 테스트
+ *
+ * @author 손지석
+ * @version jdk17
+ */
 @DataJpaTest
 @Import({PostRepositoryQueryTest.TestConfig.class, PostRepositoryQuery.class})
 @Transactional
@@ -54,8 +60,8 @@ class PostRepositoryQueryTest {
         //then
         // 연관 관계들이 잘 주입되었는지 테스트
         assertThat(findPost.getContent()).isEqualTo(post.getContent());
+        assertThat(findPost.getComments().size()).isEqualTo(post.getComments().size());
         assertThat(findPost.getPostTags().size()).isEqualTo(1);
-        assertThat(findPost.getPostComments().size()).isEqualTo(1);
         assertThat(findPost.getPostImages().size()).isEqualTo(1);
         assertThat(findPost.getPostLikes().size()).isEqualTo(1);
 
@@ -63,8 +69,6 @@ class PostRepositoryQueryTest {
         assertTrue(findPost.getPostTags().stream()
                 .anyMatch(postTag1 -> postTag1.getTag().getName().equals("tag1"))
         );
-
-
     }
     @Test
     @DisplayName("모든 게시물이 조회되는지 테스트")
@@ -121,14 +125,27 @@ class PostRepositoryQueryTest {
         assertThat(posts.size()).isEqualTo(initPosts.size() - 1); // 11개 있고 2페이지이기 때문에 10개만 조회되어야 맞음
         assertThat(posts.get(posts.size() - 1).getContent()).isEqualTo("content9");
     }
-    // 테스트 데이터 생성 메서드
+
+    /**
+     * 테스트 생성 메서드
+     * 1. 어카운트 생성
+     * 2. 태그 생성
+     * 3. 디폴트 이미지 생성
+     * 4. 어카운트, 태그, 이미지 객체를 기반으로 Post 객체 생성
+     * 5. Post 객체를 생성 후 Comment 객체 생성 (원래 시스템 적으로 Post -> Comment 순이기 때문)
+     * 6. Post 객체의 comments에 comment를 추가
+     * 7. 레포지토리를 통해 모두 저장
+     * @param index
+     * @return 모든 연관관계를 가진 Post 객체 반환
+     */
     private Post createTestData(int index) {
         Account account = getAccount();
         Tag tag = getTag(index);
         Image image = getImage();
 
-        Comment comment = getComment(account, index);
-        Post post = getPostData(tag, account, comment, image, index);
+        Post post = getPostData(tag, account, image, index);
+        Comment comment = getComment(post, account,index);
+        post.addComment(comment);
 
         saveEntities(image, account, tag, post, comment);
 
@@ -145,13 +162,12 @@ class PostRepositoryQueryTest {
     }
 
     // 댓글 데이터 생성
-    private Comment getComment(Account account, int index) {
-        Comment comment = Comment.builder()
+    private Comment getComment(Post post, Account account, int index) {
+        return Comment.builder()
+                .post(post)
                 .account(account)
                 .content("댓글" + index)
                 .build();
-
-        return comment;
     }
 
     // 이미지 데이터 생성
@@ -176,31 +192,19 @@ class PostRepositoryQueryTest {
     }
 
     // 게시물 데이터 생성
-    private static Post getPostData(Tag tag, Account account,
-                                    Comment comment, Image image, int index) {
+    private static Post getPostData(Tag tag, Account account, Image image, int index) {
         Post post = Post.builder()
                 .account(account)
                 .content("content" + index)
                 .build();
 
         addPostTag(post, tag);
-        addPostComment(post,comment);
-        addPostImage(post, image);
-        addPostLike(post,account);
+        addPostImage(post,image);
+        addPostLike(post, account);
 
         return post;
     }
 
-    // 댓글에 게시물 연결 및 게시물에 댓글 연결
-    private static void addPostComment(Post post, Comment comment) {
-        PostComment postComment = PostComment.builder()
-                .comment(comment)
-                .post(post)
-                .build();
-
-        comment.getPostComments().add(postComment);
-        post.getPostComments().add(postComment);
-    }
 
     private static void addPostImage(Post post, Image image) {
         PostImage postImage = PostImage.builder()

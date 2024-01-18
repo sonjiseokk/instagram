@@ -1,6 +1,7 @@
 package com.meta.instagram.domain.entity.repository.querydsl;
 
 import com.meta.instagram.domain.dto.SearchCondition;
+import com.meta.instagram.domain.entity.Comment;
 import com.meta.instagram.domain.entity.Post;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
@@ -14,8 +15,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import static com.meta.instagram.domain.entity.QAccount.account;
+import static com.meta.instagram.domain.entity.QComment.comment;
 import static com.meta.instagram.domain.entity.QPost.post;
-import static com.meta.instagram.domain.entity.QPostComment.postComment;
 import static com.meta.instagram.domain.entity.QPostImage.postImage;
 import static com.meta.instagram.domain.entity.QPostLike.postLike;
 import static com.meta.instagram.domain.entity.QPostTag.postTag;
@@ -40,14 +41,13 @@ public class PostRepositoryQuery{
                 .leftJoin(post.postTags, postTag)
                 .leftJoin(post.postLikes, postLike)
                 .leftJoin(post.postImages, postImage)
-                .leftJoin(post.postComments, postComment)
+//                .leftJoin(post.postComments, postComment)
                 .where(post.id.eq(id))
                 .fetchOne();
 
         if (findPost == null) {
             throw new IllegalArgumentException("게시물을 찾을 수 없습니다.");
         }
-
         return findPost;
     }
 
@@ -63,13 +63,22 @@ public class PostRepositoryQuery{
                 .select(post)
                 .from(post)
                 .leftJoin(post.account, account)
-                .leftJoin(post.postComments, postComment)
+                .leftJoin(post.comments, comment)
                 .leftJoin(post.postLikes, postLike)
                 .leftJoin(post.postTags, postTag)
                 .leftJoin(post.postImages, postImage)
                 .where(nameSearch(condition), tagSearch(condition))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
+                .fetch();
+    }
+
+    public List<Comment> findCommentsByPostId(Long postId) {
+        return queryFactory.query()
+                .select(comment)
+                .from(comment)
+                .leftJoin(comment)
+                .where(comment.post.id.eq(postId))
                 .fetch();
     }
 

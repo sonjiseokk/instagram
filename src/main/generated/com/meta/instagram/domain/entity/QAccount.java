@@ -31,8 +31,6 @@ public class QAccount extends EntityPathBase<Account> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final QImage image;
-
     //inherited
     public final DatePath<java.time.LocalDate> lastModifiedDate = _super.lastModifiedDate;
 
@@ -41,6 +39,8 @@ public class QAccount extends EntityPathBase<Account> {
     public final StringPath password = createString("password");
 
     public final ListPath<Post, QPost> posts = this.<Post, QPost>createList("posts", Post.class, QPost.class, PathInits.DIRECT2);
+
+    public final QImage profileImage;
 
     public final EnumPath<Role> role = createEnum("role", Role.class);
 
@@ -62,7 +62,7 @@ public class QAccount extends EntityPathBase<Account> {
 
     public QAccount(Class<? extends Account> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.image = inits.isInitialized("image") ? new QImage(forProperty("image")) : null;
+        this.profileImage = inits.isInitialized("profileImage") ? new QImage(forProperty("profileImage")) : null;
     }
 
 }

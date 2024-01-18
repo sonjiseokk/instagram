@@ -45,7 +45,7 @@ public class PostResponse {
         this.createdDate = post.getCreatedDate();
         this.content = post.getContent();
         this.likeCount = post.getPostLikes().size();
-        this.commentCount = post.getPostComments().size();
+        this.commentCount = post.getComments().size();
         this.comments = comments;
         this.tagNames = tagNames;
     }

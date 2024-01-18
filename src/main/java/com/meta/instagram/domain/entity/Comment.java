@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
-import static jakarta.persistence.FetchType.*;
+import static jakarta.persistence.FetchType.LAZY;
 import static lombok.AccessLevel.PROTECTED;
 
 @Entity
@@ -23,19 +23,20 @@ public class Comment {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "account_id")
     private Account account;
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "parent_id")
     private Comment parent;
     @OneToMany(mappedBy = "parent")
     private List<Comment> replies = new ArrayList<>();
 
-    @OneToMany(mappedBy = "comment")
-    private List<PostComment> postComments = new ArrayList<>();
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "post_id")
+    private Post post;
 
     @Builder
-    public Comment(String content, Account account) {
+    public Comment(String content, Account account, Post post) {
         this.content = content;
         this.account = account;
+        this.post = post;
     }
-
 }

@@ -31,11 +31,14 @@ public class Post extends BaseEntity{
     @OneToMany(mappedBy = "post")
     private List<PostLike> postLikes = new ArrayList<>();
     @OneToMany(mappedBy = "post")
-    private List<PostComment> postComments = new ArrayList<>();
+    private List<Comment> comments = new ArrayList<>();
 
     @Builder
     public Post(String content, Account account) {
         this.content = content;
         this.account = account;
+    }
+    public void addComment(Comment comment){
+        this.comments.add(comment);
     }
 }

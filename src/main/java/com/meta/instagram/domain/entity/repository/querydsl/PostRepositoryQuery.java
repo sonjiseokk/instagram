@@ -1,7 +1,6 @@
 package com.meta.instagram.domain.entity.repository.querydsl;
 
 import com.meta.instagram.domain.dto.SearchCondition;
-import com.meta.instagram.domain.entity.Comment;
 import com.meta.instagram.domain.entity.Post;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
@@ -41,7 +40,7 @@ public class PostRepositoryQuery{
                 .leftJoin(post.postTags, postTag)
                 .leftJoin(post.postLikes, postLike)
                 .leftJoin(post.postImages, postImage)
-//                .leftJoin(post.postComments, postComment)
+                .leftJoin(post.comments, comment)
                 .where(post.id.eq(id))
                 .fetchOne();
 
@@ -72,16 +71,6 @@ public class PostRepositoryQuery{
                 .limit(pageable.getPageSize())
                 .fetch();
     }
-
-    public List<Comment> findCommentsByPostId(Long postId) {
-        return queryFactory.query()
-                .select(comment)
-                .from(comment)
-                .leftJoin(comment)
-                .where(comment.post.id.eq(postId))
-                .fetch();
-    }
-
 
     private static BooleanExpression tagSearch(SearchCondition condition) {
         if (condition == null || condition.getTags() == null || condition.getTags().isEmpty()) {

@@ -35,19 +35,20 @@ public class PostResponse {
 
 
     private List<CommentDto> comments;
-    private List<String> tagNames;
+    private List<TagDto> tagNames;
 
     @Builder
-    public PostResponse(List<ImageDto> images, ImageDto profileImage, Account account, Post post, List<CommentDto> comments, List<String> tagNames) {
+    public PostResponse(List<ImageDto> images, ImageDto profileImage, Account account, Post post, List<CommentDto> comments, List<TagDto> tagNames) {
         this.images = images;
         this.profileImage = profileImage;
+        this.comments = comments;
+        this.tagNames = tagNames;
+
         this.nickname = account.getNickname();
         this.createdDate = post.getCreatedDate();
         this.content = post.getContent();
         this.likeCount = post.getPostLikes().size();
         this.commentCount = post.getComments().size();
-        this.comments = comments;
-        this.tagNames = tagNames;
     }
 
 

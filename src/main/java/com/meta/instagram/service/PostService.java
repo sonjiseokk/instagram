@@ -1,11 +1,19 @@
 package com.meta.instagram.service;
 
+import com.meta.instagram.domain.dto.CommentDto;
+import com.meta.instagram.domain.dto.ImageDto;
+import com.meta.instagram.domain.dto.PostResponse;
+import com.meta.instagram.domain.dto.TagDto;
+import com.meta.instagram.domain.entity.*;
 import com.meta.instagram.domain.entity.repository.PostRepository;
-import com.meta.instagram.domain.entity.repository.TagRepository;
 import com.meta.instagram.domain.entity.repository.querydsl.PostRepositoryQuery;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -13,47 +21,64 @@ import org.springframework.transaction.annotation.Transactional;
 public class PostService {
     private final PostRepository postRepository;
     private final PostRepositoryQuery postRepositoryQuery;
-    private final TagRepository tagRepository;
 
-//    public PostResponse findById(Long id) {
-//        Post post = postRepositoryQuery.findById(id);
-//
-//        // 이미지 엔티티 추출
-//        List<PostImage> postImages = post.getPostImages();
-//        List<ImageDto> imageDtos = convertPostImageToImage(postImages);
-//
-//        // account 엔티티 추출
-//        Account account = post.getAccount();
-//        Image profileImage = account.getProfileImage();
-//
-//        ImageDto profileImageDto = ImageDto.builder()
-//                .image(profileImage)
-//                .build();
-//
-//        List<PostComment> postComments = post.getPostComments();
-//        List<Comment> comments = convertPostCommentToComment(postComments);
-//
-//        Set<PostTag> postTags = post.getPostTags();
-//        List<String> tagNames = convertPostTagsToTagNames(postTags);
-//
-//
-//    }
+    /**
+     * 특정 게시물의 모든 정보를 볼 수 있는 서비스
+     * 1. 프로필 이미지, 닉네임, 작성일
+     * 2. 본문 사진(들), 글 내용 (콘텐츠)
+     * 3. 좋아요 개수
+     * 4. 댓글 개수, 댓글 내용들
+     * 5. 태그 이름(들)
+     *
+     * @param postId 찾는 게시물 아이디
+     * @return DTO 형태로 감싼 PostResponse
+     */
+    public PostResponse viewPostDetail(Long postId) {
+        Post post = postRepositoryQuery.findById(postId);
 
-//    private static List<String> convertPostTagsToTagNames(Set<PostTag> postTags) {
-//        return postTags.stream()
-//                .map(postTag -> postTag.getTag().getName())
-//                .collect(Collectors.toList());
-//    }
-//
-//    private static List<Comment> convertPostCommentToComment(List<PostComment> postComments) {
-//        return postComments.stream()
-//                .map(postComment -> postComment.getComment())
-//                .collect(Collectors.toList());
-//    }
-//
-//    private static List<ImageDto> convertPostImageToImage(List<PostImage> postImages) {
-//        return postImages.stream()
-//                .map(postImage -> ImageDto.builder().image(postImage.getImage()).build())
-//                .collect(Collectors.toList());
-//    }
+        return PostResponse.builder()
+                .images(convertPostImages(post.getPostImages()))
+                .profileImage(createImageDto(post.getAccount().getProfileImage()))
+                .account(post.getAccount())
+                .post(post)
+                .comments(convertComments(post.getComments()))
+                .tagNames(convertPostTags(post.getPostTags()))
+                .build();
+    }
+
+    private static List<TagDto> convertPostTags(Set<PostTag> postTags) {
+        return postTags.stream()
+                .map(postTag -> postTag.getTag())
+                .map(tag -> TagDto.builder().tagName(tag.getName()).build())
+                .collect(Collectors.toList());
+    }
+
+    private static List<CommentDto> convertComments(List<Comment> comments) {
+        return comments.stream()
+                .map(comment -> createCommentDto(comment))
+                .collect(Collectors.toList());
+    }
+
+    private static List<ImageDto> convertPostImages(List<PostImage> postImages) {
+        return postImages.stream()
+                .map(postImage -> postImage.getImage())
+                .map(image -> createImageDto(image))
+                .collect(Collectors.toList());
+    }
+
+    private static ImageDto createImageDto(Image image) {
+        return ImageDto.builder()
+                .image(image)
+                .build();
+    }
+
+    private static CommentDto createCommentDto(Comment comment) {
+        return CommentDto.builder()
+                .content(comment.getContent())
+                .nickname(comment.getAccount().getNickname())
+                .replyContent(null)
+                .build();
+    }
+
+
 }

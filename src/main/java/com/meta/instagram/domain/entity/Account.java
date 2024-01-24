@@ -9,8 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static jakarta.persistence.EnumType.STRING;
-import static jakarta.persistence.FetchType.*;
+import static jakarta.persistence.FetchType.LAZY;
 import static lombok.AccessLevel.PROTECTED;
+
 
 @Getter
 @NoArgsConstructor(access = PROTECTED)
@@ -32,12 +33,10 @@ public class Account extends BaseEntity{
     private Image profileImage;
 
     @Builder
-    public Account(final String email, final String nickname, final String password) {
+    public Account(String email, String nickname, String password, Image profileImage) {
         this.email = email;
         this.nickname = nickname;
         this.password = password;
-        this.role = Role.ROLE_USER;
-        this.posts = new ArrayList<>();
-        this.profileImage = Image.getDefaultImage();
+        this.profileImage = profileImage;
     }
 }

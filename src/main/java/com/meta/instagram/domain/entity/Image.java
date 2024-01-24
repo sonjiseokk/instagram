@@ -39,4 +39,5 @@ public class Image {
                 .type("jpg")
                 .build();
     }
+
 }

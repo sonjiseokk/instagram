@@ -1,4 +1,4 @@
-package com.meta.instagram.domain.dto;
+package com.meta.instagram.domain.dto.account;
 
 import com.meta.instagram.domain.entity.Account;
 import com.meta.instagram.domain.entity.Image;

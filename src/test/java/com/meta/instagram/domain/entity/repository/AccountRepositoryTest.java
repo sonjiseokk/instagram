@@ -1,6 +1,6 @@
 package com.meta.instagram.domain.entity.repository;
 
-import com.meta.instagram.domain.dto.RegisterAccountDto;
+import com.meta.instagram.domain.dto.account.RegisterAccountDto;
 import com.meta.instagram.domain.entity.Account;
 import com.meta.instagram.domain.entity.Image;
 import jakarta.persistence.EntityManager;

@@ -5,6 +5,7 @@ import com.meta.instagram.domain.entity.Account;
 import com.meta.instagram.domain.entity.Image;
 import com.meta.instagram.domain.entity.repository.AccountRepository;
 import com.meta.instagram.domain.entity.repository.ImageRepository;
+import com.meta.instagram.exception.DuplicateAccountException;
 import com.meta.instagram.exception.UploadFileException;
 import com.meta.instagram.service.aws.S3UploadService;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Optional;
 
 /**
  * 계정과 관련된 서비스
@@ -25,7 +27,13 @@ public class AccountService {
     private final AccountRepository accountRepository;
     private final ImageRepository imageRepository;
     private final S3UploadService s3UploadService;
-    public Long join(RegisterAccountDto registerAccountDto) throws UploadFileException {
+    public Long join(RegisterAccountDto registerAccountDto) throws UploadFileException, DuplicateAccountException {
+        // 이메일로 중복 회원 체크
+        Optional<Account> findByEmailResult = accountRepository.findByEmail(registerAccountDto.getEmail());
+        if (findByEmailResult.isPresent()) {
+            throw new DuplicateAccountException("[오류] 이메일이 중복되어 가입할 수 없습니다.");
+        }
+
         // DTO로부터 멀티파트파일의 이미지
         MultipartFile multipartFile = registerAccountDto.getProfileImage();
 

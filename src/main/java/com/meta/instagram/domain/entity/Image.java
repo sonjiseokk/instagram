@@ -19,14 +19,12 @@ public class Image {
     @Column(name = "image_id")
     private Long id;
     private String path;
-    private String originalName;
     private String type;
-    private Integer size;
+    private long size;
 
     @Builder
-    public Image(String path, String originalName, String type, Integer size) {
+    public Image(String path, String type, long size) {
         this.path = path;
-        this.originalName = originalName;
         this.type = type;
         this.size = size;
     }
@@ -34,7 +32,6 @@ public class Image {
     public static Image getDefaultImage(){
         return Image.builder()
                 .path("/")
-                .originalName("default_image")
                 .size(0)
                 .type("jpg")
                 .build();

@@ -21,11 +21,9 @@ public class QImage extends EntityPathBase<Image> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final StringPath originalName = createString("originalName");
-
     public final StringPath path = createString("path");
 
-    public final NumberPath<Integer> size = createNumber("size", Integer.class);
+    public final NumberPath<Long> size = createNumber("size", Long.class);
 
     public final StringPath type = createString("type");
 

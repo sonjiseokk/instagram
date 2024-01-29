@@ -9,6 +9,7 @@ import com.meta.instagram.exception.DuplicateAccountException;
 import com.meta.instagram.exception.UploadFileException;
 import com.meta.instagram.service.aws.S3UploadService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,6 +28,7 @@ public class AccountService {
     private final AccountRepository accountRepository;
     private final ImageRepository imageRepository;
     private final S3UploadService s3UploadService;
+    private final BCryptPasswordEncoder passwordEncoder;
     public Long join(RegisterAccountDto registerAccountDto) throws UploadFileException, DuplicateAccountException {
         // 이메일로 중복 회원 체크
         Optional<Account> findByEmailResult = accountRepository.findByEmail(registerAccountDto.getEmail());
@@ -52,8 +54,9 @@ public class AccountService {
                 .size(multipartFile.getSize())
                 .build();
 
-        // Account 프로필 이미지 필드에 Image 객체 할당하여 Account 객체 생성
-        Account account = registerAccountDto.toEntity(image);
+        // Account 프로필 이미지 필드에 Image 객체 할당하여 Account 객체 생성 + 비밀번호 암호화
+        String encodePw = passwordEncoder.encode(registerAccountDto.getPassword());
+        Account account = registerAccountDto.toEntity(image,encodePw);
 
         // Account 저장
         accountRepository.save(account);

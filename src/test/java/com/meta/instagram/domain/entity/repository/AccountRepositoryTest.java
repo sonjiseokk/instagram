@@ -25,7 +25,7 @@ class AccountRepositoryTest {
     void 계정_생성() throws Exception {
         //given
         RegisterAccountDto registerAccountDto = getAccountData();
-        Account account = registerAccountDto.toEntity(Image.getDefaultImage());
+        Account account = registerAccountDto.toEntity(Image.getDefaultImage(), "111");
         //when
         Account savedAccount = accountRepository.save(account);
 

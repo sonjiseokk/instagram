@@ -33,10 +33,11 @@ public class Account extends BaseEntity{
     private Image profileImage;
 
     @Builder
-    public Account(String email, String nickname, String password, Image profileImage) {
+    public Account(String email, String nickname, String password, Role role, Image profileImage) {
         this.email = email;
         this.nickname = nickname;
         this.password = password;
+        this.role = role;
         this.profileImage = profileImage;
     }
 }

@@ -5,12 +5,12 @@ import lombok.Getter;
 
 @Getter
 public class LoginAccountDto {
-    private String userId;
+    private String email;
     private String password;
 
     @Builder
-    public LoginAccountDto(String userId, String password) {
-        this.userId = userId;
+    public LoginAccountDto(String email, String password) {
+        this.email = email;
         this.password = password;
     }
 

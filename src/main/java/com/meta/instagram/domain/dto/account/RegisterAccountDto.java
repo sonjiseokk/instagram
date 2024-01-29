@@ -21,11 +21,11 @@ public class RegisterAccountDto {
         this.profileImage = profileImage;
     }
 
-    public Account toEntity(Image profileImage) {
+    public Account toEntity(Image profileImage, String encodePw) {
         return Account.builder()
                 .email(this.getEmail())
                 .nickname(this.nickname)
-                .password(this.password)
+                .password(encodePw)
                 .profileImage(profileImage)
                 .build();
     }

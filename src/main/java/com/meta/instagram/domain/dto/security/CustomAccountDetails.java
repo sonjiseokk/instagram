@@ -1,18 +1,20 @@
 package com.meta.instagram.domain.dto.security;
 
 import com.meta.instagram.domain.entity.Account;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Optional;
-
+@Getter
 public class CustomAccountDetails implements UserDetails {
     private final Account account;
+    private final Long id;
 
     public CustomAccountDetails(Account account) {
         this.account = account;
+        this.id = account.getId();
     }
 
     @Override
@@ -30,7 +32,7 @@ public class CustomAccountDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return account.getNickname();
+        return account.getUsername();
     }
 
     @Override
@@ -53,7 +55,4 @@ public class CustomAccountDetails implements UserDetails {
         return false;
     }
 
-    public CustomAccountDetails(Optional<Account> findAccount, Account account) {
-        this.account = account;
-    }
 }

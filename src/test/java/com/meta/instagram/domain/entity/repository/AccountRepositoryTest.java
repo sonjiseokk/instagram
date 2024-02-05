@@ -2,7 +2,6 @@ package com.meta.instagram.domain.entity.repository;
 
 import com.meta.instagram.domain.dto.account.RegisterAccountDto;
 import com.meta.instagram.domain.entity.Account;
-import com.meta.instagram.domain.entity.Image;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.DisplayName;
@@ -25,7 +24,7 @@ class AccountRepositoryTest {
     void 계정_생성() throws Exception {
         //given
         RegisterAccountDto registerAccountDto = getAccountData();
-        Account account = registerAccountDto.toEntity(Image.getDefaultImage(), "111");
+        Account account = registerAccountDto.toEntity( "111");
         //when
         Account savedAccount = accountRepository.save(account);
 
@@ -39,9 +38,9 @@ class AccountRepositoryTest {
     private static RegisterAccountDto getAccountData() {
         return RegisterAccountDto.builder()
                 .email("test@gmail.com")
+                .username("username")
                 .nickname("test")
                 .password("pass")
-                .profileImage(null)
                 .build();
     }
 }

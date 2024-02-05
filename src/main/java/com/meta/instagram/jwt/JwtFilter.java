@@ -2,7 +2,6 @@ package com.meta.instagram.jwt;
 
 import com.meta.instagram.domain.dto.security.CustomAccountDetails;
 import com.meta.instagram.domain.entity.Account;
-import com.meta.instagram.domain.entity.Role;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -57,10 +56,9 @@ public class JwtFilter extends OncePerRequestFilter {
         // 따라서 여기선 그냥 username, role만 유효한 객체를 생성해서 details에 넣어주려고 함
         Account account = Account.builder()
                 .email(email)
+                .username("username")
                 .nickname("temp")
                 .password("temp")
-                .profileImage(null)
-                .role(Role.valueOf(role))
                 .build();
         //UserDetails에 회원 정보 객체 담기
         CustomAccountDetails customUserDetails = new CustomAccountDetails(account);

@@ -34,12 +34,15 @@ public class Account extends BaseEntity{
     private Image profileImage;
     @Builder
 
-    public Account(String email, String username, String nickname, String password, Role role, Image profileImage) {
+    public Account(String email, String username, String nickname, String password) {
         this.email = email;
         this.username = username;
         this.nickname = nickname;
         this.password = password;
-        this.role = role;
-        this.profileImage = profileImage;
+        this.role = Role.ROLE_USER;
+        this.profileImage = Image.getDefaultImage();
+    }
+    public void setProfileImage(Image image){
+        this.profileImage = image;
     }
 }

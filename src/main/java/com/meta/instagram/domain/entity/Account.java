@@ -22,6 +22,7 @@ public class Account extends BaseEntity{
     @Column(name = "account_id")
     private Long id;
     private String email;
+    private String username;
     private String nickname;
     private String password;
     @Enumerated(value = STRING)
@@ -31,10 +32,11 @@ public class Account extends BaseEntity{
     @ManyToOne(fetch = LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name = "image_id")
     private Image profileImage;
-
     @Builder
-    public Account(String email, String nickname, String password, Role role, Image profileImage) {
+
+    public Account(String email, String username, String nickname, String password, Role role, Image profileImage) {
         this.email = email;
+        this.username = username;
         this.nickname = nickname;
         this.password = password;
         this.role = role;

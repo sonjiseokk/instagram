@@ -44,6 +44,8 @@ public class QAccount extends EntityPathBase<Account> {
 
     public final EnumPath<Role> role = createEnum("role", Role.class);
 
+    public final StringPath username = createString("username");
+
     public QAccount(String variable) {
         this(Account.class, forVariable(variable), INITS);
     }

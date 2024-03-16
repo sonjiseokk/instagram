@@ -1,4 +1,4 @@
-package com.meta.instagram.controller;
+package com.meta.instagram.controller.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

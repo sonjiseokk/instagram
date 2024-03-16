@@ -41,6 +41,8 @@ dependencies {
     // 스타터 웹
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
+    // 스타터 밸리데이터
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
     // 롬복
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'

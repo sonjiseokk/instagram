@@ -42,7 +42,7 @@ public class Account extends BaseEntity{
         this.role = Role.ROLE_USER;
         this.profileImage = Image.getDefaultImage();
     }
-    public void setProfileImage(Image image){
+    public void changeProfileImage(Image image){
         this.profileImage = image;
     }
 }

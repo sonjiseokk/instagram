@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import static org.springframework.http.HttpStatus.OK;
@@ -19,6 +20,7 @@ import static org.springframework.http.HttpStatus.OK;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
+@RequestMapping("/user")
 public class AccountController {
     private final AccountService accountService;
 
@@ -33,8 +35,9 @@ public class AccountController {
      */
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody @Valid RegisterAccountDto dto, BindingResult bindingResult) throws DuplicateAccountException {
+        // 입력값이 non-valid 라면 예외처리
         if (bindingResult.hasErrors()) {
-            throw new ValidationException(bindingResult);
+            throw new ValidationException("[오류] 필수 값이 비어있다면 진행할 수 없습니다");
         }
         // 가입 진행
         accountService.join(dto);

@@ -38,7 +38,6 @@ class AccountRepositoryTest {
     private static RegisterAccountDto getAccountData() {
         return RegisterAccountDto.builder()
                 .email("test@gmail.com")
-                .username("username")
                 .nickname("test")
                 .password("pass")
                 .build();

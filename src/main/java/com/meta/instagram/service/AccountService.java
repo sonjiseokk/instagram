@@ -1,6 +1,8 @@
 package com.meta.instagram.service;
 
+import com.amazonaws.services.kms.model.NotFoundException;
 import com.meta.instagram.domain.dto.account.RegisterAccountDto;
+import com.meta.instagram.domain.dto.security.CustomAccountDetails;
 import com.meta.instagram.domain.entity.Account;
 import com.meta.instagram.domain.entity.Image;
 import com.meta.instagram.domain.entity.repository.AccountRepository;
@@ -9,6 +11,7 @@ import com.meta.instagram.exception.DuplicateAccountException;
 import com.meta.instagram.exception.UploadFileException;
 import com.meta.instagram.service.aws.S3UploadService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,16 +32,34 @@ public class AccountService {
     private final ImageRepository imageRepository;
     private final S3UploadService s3UploadService;
     private final BCryptPasswordEncoder passwordEncoder;
-    public Long join(RegisterAccountDto registerAccountDto) throws UploadFileException, DuplicateAccountException {
+    public Long join(RegisterAccountDto registerAccountDto) throws DuplicateAccountException {
         // 이메일로 중복 회원 체크
         Optional<Account> findByEmailResult = accountRepository.findByEmail(registerAccountDto.getEmail());
         if (findByEmailResult.isPresent()) {
             throw new DuplicateAccountException("[오류] 이메일이 중복되어 가입할 수 없습니다.");
         }
+        // Account 비밀번호 암호화
+        String encodePw = passwordEncoder.encode(registerAccountDto.getPassword());
 
-        // DTO로부터 멀티파트파일의 이미지
-        MultipartFile multipartFile = registerAccountDto.getProfileImage();
+        // registerAccountDto 메소드를 통해 엔티티로 변환
+        Account account = registerAccountDto.toEntity(encodePw);
 
+        // Account 저장
+        accountRepository.save(account);
+
+        return account.getId();
+    }
+
+    //    public Long login(LoginAccountDto loginAccountDto){
+//
+//    }
+    public void profileImageUpload(Authentication authentication, MultipartFile multipartFile) throws UploadFileException {
+        CustomAccountDetails accountDetails = (CustomAccountDetails) authentication.getPrincipal();
+        Optional<Account> findAccount = accountRepository.findById(accountDetails.getId());
+
+        if (findAccount.isEmpty()) {
+            throw new NotFoundException("[오류] 인증 객체에서 유저 정보를 가져올 수 없습니다.");
+        }
         // S3에 해당 파일 저장
         String savedPathName;
         try {
@@ -54,17 +75,8 @@ public class AccountService {
                 .size(multipartFile.getSize())
                 .build();
 
-        // Account 프로필 이미지 필드에 Image 객체 할당하여 Account 객체 생성 + 비밀번호 암호화
-        String encodePw = passwordEncoder.encode(registerAccountDto.getPassword());
-        Account account = registerAccountDto.toEntity(image,encodePw);
-
-        // Account 저장
-        accountRepository.save(account);
-
-        return account.getId();
+        Account account = accountDetails.getAccount();
+        account.changeProfileImage(image);
     }
-//    public Long login(LoginAccountDto loginAccountDto){
-//
-//    }
 
 }
